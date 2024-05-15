@@ -24,27 +24,58 @@ int main() {
 	uint16_t *inst_mem = init_inst_mem();
 	struct reg_t *reg = init_reg();
 
-	// ~~~ BETA ~~~ //
-	reg->GPRS[1] = 0x01;
-	reg->GPRS[0] = 0x01;
-	reg->PC = 0x01;
-
 	// read the assembly code into the memory
 	read_asm(inst_mem, path);
 
-	// fetch the instructions
-	uint16_t curr_inst = fetch(inst_mem, reg);
+	// init the clock cycle counter cc = 2 + (number of instructions - 1)
+	uint8_t cc = 0;
 
-	// decode the instruction
-	struct PCB_t pcb = decode(curr_inst, reg);
+	// init the PCBsss
+	uint16_t fetch_inst;
+	struct PCB_t decode_pcb;
+	struct PCB_t execute_pcb;
 
-	// execute the instruction
-	execute(pcb, reg, data_mem);
-	
+	// init haulting condition
+	bool hault = false;
+
+	// enter the MAIN WHILE loop
+	while (!hault) {
+		// init the countersss
+		uint8_t fetch_counter = reg->PC; // USELESS
+		uint8_t decode_counter = reg->PC - 1;
+		uint8_t execute_counter = reg->PC - 2;
+
+		// check if the counterss are valid
+		bool decode_valid = (decode_counter & 0b10000000) == 0;
+		bool execute_valid = (execute_counter & 0b10000000) == 0;
+
+		// ~~~ execute the instruction ~~~ //
+		if (execute_valid) {
+			execute(execute_pcb, reg, data_mem);
+		}
+
+		// ~~~ decode the instruction ~~~ //
+		if (decode_valid) {
+			decode_pcb = decode(fetch_inst, reg);
+			execute_pcb = decode_pcb;
+		}
+
+		// ~~~ fetch the instruction ~~~ //
+		fetch_inst = fetch(inst_mem, reg);
+
+		// check if the fetch PCB is haulting
+		printf("fetch_inst at %d: %x\n", reg->PC - 1, fetch_inst);
+		hault = (fetch_inst == 0xf000);
+
+		// increment the clock cycle counter
+		cc++;
+		
+		hault = (cc > 20);
+	}
+
+
 	// print EVERYTHING
-	pretty_print_pcb(pcb);
-	pretty_print_reg(reg);
-	pretty_print_data_mem(data_mem);
+	pretty_print_inst_mem(inst_mem);
 
 	// kill all the MA
 	kill_data_mem(data_mem);
