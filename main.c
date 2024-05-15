@@ -25,9 +25,9 @@ int main() {
 	struct reg_t *reg = init_reg();
 
 	// ~~~ BETA ~~~ //
-	reg->GPRS[0] = 0xcc;
-	reg->GPRS[1] = 0xcc;
-	reg->PC = 0x00;
+	reg->GPRS[1] = 0x01;
+	reg->GPRS[0] = 0x01;
+	reg->PC = 0x01;
 
 	// read the assembly code into the memory
 	read_asm(inst_mem, path);
@@ -37,11 +37,12 @@ int main() {
 
 	// decode the instruction
 	struct PCB_t pcb = decode(curr_inst, reg);
-	pretty_print_pcb(pcb);
 
 	// execute the instruction
 	execute(pcb, reg, data_mem);
 	
+	// print EVERYTHING
+	pretty_print_pcb(pcb);
 	pretty_print_reg(reg);
 	pretty_print_data_mem(data_mem);
 
