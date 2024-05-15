@@ -1,0 +1,12 @@
+ADD 00 01
+SUB 3b 2c
+MUL 3b 2c
+LDI 3b 1a
+BEQZ 3b 1a
+AND 3b 2c
+OR 3b 2c
+JR 3b 2c
+SLC 3b 1a
+SRC 3b 1a
+LB 3b 33
+SB 3b 33
