@@ -64,6 +64,7 @@ void pretty_print_inst_mem( uint16_t *inst_mem) {
 	if (start != end) {
 		printf("0x%04x-0x%04x: 0x0000\n", start, end);
 	}
+	printf("======================================\n");
 }
 
 #endif

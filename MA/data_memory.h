@@ -63,6 +63,7 @@ void pretty_print_data_mem( uint8_t *data_mem) {
 	if (start != end) {
 		printf("0x%04x-0x%04x: 0x00\n", start, end);
 	}
+	printf("===============================\n");
 }
 
 #endif

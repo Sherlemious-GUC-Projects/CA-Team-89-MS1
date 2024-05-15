@@ -117,6 +117,7 @@ void pretty_print_reg(struct reg_t* reg) {
 
 	printf("----------PC----------\n");
 	printf("0x%02x\n", reg->PC);
+	printf("=============================\n");
 }
 
 #endif

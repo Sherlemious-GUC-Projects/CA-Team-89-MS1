@@ -12,6 +12,10 @@ uint16_t concat(uint8_t a, uint8_t b) {
 }
 
 
+void handle_carry(struct PCB_t pcb) {
+}
+
+
 void handle_addition(struct PCB_t pcb, struct reg_t *reg) {
 	// init some vars
 	uint32_t mask = 0x000000ff;
@@ -29,6 +33,7 @@ void handle_addition(struct PCB_t pcb, struct reg_t *reg) {
 
 	// Do the Addition
 	reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] + reg->GPRS[pcb.operand2];
+	pcb.operand1 = pcb.operand1 + pcb.operand2;
 }
 
 

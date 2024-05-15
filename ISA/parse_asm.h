@@ -6,9 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// definitions
-#define ASM_PATH "asm.txt"
-
 uint8_t parse_OPCode(char *token) {
 	if (strcmp(token, "ADD") == 0) {
 		return 0b0000;
@@ -41,9 +38,9 @@ uint8_t parse_OPCode(char *token) {
 }
 
 
-void read_asm(uint16_t *inst_mem) {
+void read_asm(uint16_t *inst_mem, char *path) {
 	// open the file and check if its there
-	FILE *fp = fopen(ASM_PATH, "r");
+	FILE *fp = fopen(path, "r");
 	if (fp == NULL) {
 		printf("Error: File not found\n");
 		exit(1);
