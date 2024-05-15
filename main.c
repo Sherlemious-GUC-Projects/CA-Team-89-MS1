@@ -86,14 +86,37 @@ void read_asm() {
 		int j = 0;
 		while (token != NULL) {
 			if (j == 0) {
-				// parse the OPCode
+				// parse the OPCode (error handling is done in the function)
 				OPCode = parse_OPCode(token);
 			} else if (j == 1) {
+				// check if the operand is a valid hex number
+				if (strspn(token, "0123456789abcdef") != strlen(token)) {
+					printf("Error: Invalid operand\n");
+					exit(1);
+				}
+
 				// parse the first operand
 				operand1 = (int)strtol(token, NULL, 16);
+
+				// check if the operand is within the range of 6 bits
+				if (operand1 > 0b111111) {
+					printf("Error: Operand out of range\n");
+					exit(1);
+				}
 			} else if (j == 2) {
+				// check if the operand is a valid hex number
+				if (strspn(token, "0123456789abcdef") != strlen(token)) {
+					printf("Error: Invalid operand\n");
+					exit(1);
+				}
 				// parse the second operand
 				operand2 = (int)strtol(token, NULL, 16);
+
+				// check if the operand is within the range of 6 bits
+				if (operand2 > 0b111111) {
+					printf("Error: Operand out of range\n");
+					exit(1);
+				}
 			} else {
 				printf("Error: Too many operands\n");
 				exit(1);
@@ -145,6 +168,32 @@ struct PCB_t decode(uint16_t inst) {
 	return pcb;
 }
 
+uint16_t concat(uint8_t a, uint8_t b) {
+	return (a << 8) | b;
+}
+
+
+
+
+void handle_addition(struct PCB_t pcb) {
+	// init some vars
+	uint32_t mask = 0x000000ff;
+	uint32_t expanded_a;
+	uint32_t expanded_b;
+
+	// check for the carry flag
+	expanded_a = (reg->GPRS[pcb.operand1] & mask);
+	expanded_b = (reg->GPRS[pcb.operand2] & mask);
+	if ((expanded_a + expanded_b) > mask) {
+		set_reg_flag(reg, 'C', 1);
+	} else {
+		set_reg_flag(reg, 'C', 0);
+	}
+
+	// Do the Addition
+	reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] + reg->GPRS[pcb.operand2];
+}
+
 
 void execute(struct PCB_t pcb) {
 	/*
@@ -164,7 +213,7 @@ void execute(struct PCB_t pcb) {
 	// match each case and execute the instruction
 	switch (pcb.OPCode) {
 		case 0://ADD
-			reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] + reg->GPRS[pcb.operand2];
+			handle_addition(pcb);
 			break;
 		case 1://SUB
 			reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] - reg->GPRS[pcb.operand2];
@@ -187,10 +236,10 @@ void execute(struct PCB_t pcb) {
 			reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] | reg->GPRS[pcb.operand2];
 			break;
 		case 7://JR
-			reg->PC = reg->GPRS[pcb.operand1] || reg->GPRS[pcb.operand2];
+			reg->PC = concat(reg->GPRS[pcb.operand1], reg->GPRS[pcb.operand2]);
 			break;
 		case 8://SLC
-			reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] << pcb.operand2 | reg->GPRS[pcb.operand1] >> (8 - pcb.operand2);
+			reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] << pcb.operand2; //| reg->GPRS[pcb.operand1] >> (8 - pcb.operand2);
 			break;
 		case 9://SRC
 			reg->GPRS[pcb.operand1] = reg->GPRS[pcb.operand1] >> pcb.operand2 | reg->GPRS[pcb.operand1] << (8 - pcb.operand2);
@@ -215,8 +264,9 @@ int main() {
 	reg = init_reg();
 
 	// ~~~ BETA ~~~ //
-	reg->GPRS[0] = 0x01;
-	reg->GPRS[1] = 0x02;
+	reg->GPRS[0] = 0xcc;
+	reg->GPRS[1] = 0x01;
+	reg->PC = 0x00;
 
 	// read the assembly code into the memory
 	read_asm();
@@ -226,11 +276,13 @@ int main() {
 
 	// decode the instruction
 	struct PCB_t pcb = decode(curr_inst);
+	printf("OPCode: %02x, operand1: %02x, operand2: %02x\n", pcb.OPCode, pcb.operand1, pcb.operand2);
 
 	// execute the instruction
 	execute(pcb);
 	
 	pretty_print_reg(reg);
+	pretty_print_data_mem(data_mem);
 
 	// kill all the MA
 	kill_data_mem(data_mem);

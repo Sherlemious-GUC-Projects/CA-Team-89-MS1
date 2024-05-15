@@ -44,6 +44,7 @@ uint16_t get_inst( uint16_t *inst_mem, int address) {
 void pretty_print_inst_mem( uint16_t *inst_mem) {
 	// loop over all the mem if there is non-zero value print it
 	// if the value is zero print all the consecutive zeros as one line
+	printf("==========INSTRUCTION MEMORY==========\n");
 	int i;
 	int start = 0;
 	int end = 0;
