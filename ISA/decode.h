@@ -6,13 +6,13 @@
 
 
 struct PCB_t {
-	uint8_t OPCode;
-	uint8_t operand1;
-	uint8_t operand2;
-	uint8_t R1;
-	uint8_t R2;
-	uint8_t IMM;
-	bool is_R_format;
+	uint8_t OPCode; // 4 bits
+	uint8_t operand1; // 6 bits
+	uint8_t operand2; // 6 bits
+	uint8_t R1; // 8 bits
+	uint8_t R2; // 8 bits
+	uint8_t IMM; // 8 bits
+	bool is_R_format; // 1 bit
 };
 
 
@@ -49,7 +49,7 @@ struct PCB_t decode(uint16_t inst, struct reg_t *reg) {
 }
 
 void pretty_print_pcb(struct PCB_t pcb) {
-	printf("==========PCB==========\n");
+	printf("==================PCB=================\n");
 	printf("OPCode: 0x%02x\n", pcb.OPCode);
 	printf("Operand1: 0x%02x\n", pcb.operand1);
 	printf("Operand2: 0x%02x\n", pcb.operand2);
@@ -57,7 +57,7 @@ void pretty_print_pcb(struct PCB_t pcb) {
 	printf("R2: 0x%02x\n", pcb.R2);
 	printf("IMM: 0x%02x\n", pcb.IMM);
 	printf("is_R_format: %s\n", pcb.is_R_format ? "true" : "false");
-	printf("=======================\n");
+	printf("======================================\n");
 }
 
 

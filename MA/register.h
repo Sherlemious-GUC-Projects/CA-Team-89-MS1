@@ -13,7 +13,7 @@ struct reg_t {
 };
 
 struct reg_t* init_reg() {
-	struct reg_t* reg = (struct reg_t*)malloc(sizeof(struct reg_t));
+	struct reg_t* reg = (struct reg_t*)calloc(1, sizeof(struct reg_t));
 	if (reg == NULL) {
 		printf("Error: Memory allocation failed\n");
 		exit(1);
@@ -90,8 +90,16 @@ void set_reg_flag(struct reg_t* reg, char flag, uint8_t value) {
 	}
 }
 
+void _pretty_print_SREG(struct reg_t* reg) {
+	printf("C: %d\n", get_reg_flag(reg, 'C'));
+	printf("V: %d\n", get_reg_flag(reg, 'V'));
+	printf("N: %d\n", get_reg_flag(reg, 'N'));
+	printf("S: %d\n", get_reg_flag(reg, 'S'));
+	printf("Z: %d\n", get_reg_flag(reg, 'Z'));
+}
+
 void pretty_print_reg(struct reg_t* reg) {
-	printf("==========REGISTERS==========\n");
+	printf("===============REGISTERS==============\n");
 	printf("----------GPRS----------\n");
 	int start = 0;
 	int end = 0;
@@ -109,15 +117,15 @@ void pretty_print_reg(struct reg_t* reg) {
 	}
 	// print the remaining zeros
 	if (start != end) {
-		printf("0x%02x-0x%02x: 0x0000\n", start, end);
+		printf("0x%02x-0x%02x: 0x00\n", start, end);
 	}
 
 	printf("----------SREG----------\n");
-	printf("0x%02x\n", reg->SREG);
+	_pretty_print_SREG(reg);
 
 	printf("----------PC----------\n");
 	printf("0x%02x\n", reg->PC);
-	printf("=============================\n");
+	printf("======================================\n");
 }
 
 #endif

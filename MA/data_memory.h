@@ -43,7 +43,7 @@ uint8_t get_data( uint8_t *data_mem, int address) {
 void pretty_print_data_mem( uint8_t *data_mem) {
 	// loop over all the mem if there is non-zero value print it
 	// if the value is zero print all the consecutive zeros as one line
-	printf("==========DATA MEMORY==========\n");
+	printf("==============DATA MEMORY=============\n");
 	int i;
 	int start = 0;
 	int end = 0;
@@ -63,7 +63,7 @@ void pretty_print_data_mem( uint8_t *data_mem) {
 	if (start != end) {
 		printf("0x%04x-0x%04x: 0x00\n", start, end);
 	}
-	printf("===============================\n");
+	printf("======================================\n");
 }
 
 #endif
