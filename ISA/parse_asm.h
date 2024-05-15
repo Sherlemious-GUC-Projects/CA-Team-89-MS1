@@ -115,6 +115,9 @@ void read_asm(uint16_t *inst_mem, char *path) {
 		i++;
 	}
 
+	// set the last instruction to have an opcode of 0b1111
+	set_inst(inst_mem, i, 0xF000);
+
 	// close the file
 	fclose(fp);
 }
