@@ -95,6 +95,13 @@ void read_asm(uint16_t *inst_mem, char *path) {
 					printf("Error: Operand out of range\n");
 					exit(1);
 				}
+			} else if (j == 3) {
+				// check if the message starts with #
+				if (strncmp(token, "#", 1) != 0){
+					printf("Error: comment is not well formatted: %s\n", token);
+					exit(1);
+				}
+				break;
 			} else {
 				printf("Error: Too many operands\n");
 				exit(1);

@@ -263,10 +263,13 @@ void execute(struct PCB_t pcb, struct reg_t *reg, uint8_t *data_mem) {
 			// Do the Store Byte
 			set_data(data_mem, pcb.IMM, pcb.R1);
 			break;
+		case 15://HALT
+			printf("Warning: trying to execute a halt command\n");
+			break;
 		default:
-			printf("Error: Invalid OPCode\n");
+			printf("Error: Invalid OPCode: %d\n", pcb.OPCode);
 			exit(1);
-		}
+	}
 }
 
 

@@ -27,7 +27,7 @@ int main() {
 	// read the assembly code into the memory
 	read_asm(inst_mem, path);
 
-	// init the clock cycle counter cc = 2 + (number of instructions - 1)
+	// init the clock cycle counter cc = 3 + (number of instructions - 1)
 	uint8_t cc = 0;
 
 	// init the PCBsss
@@ -35,19 +35,21 @@ int main() {
 	struct PCB_t decode_pcb;
 	struct PCB_t execute_pcb;
 
-	// init haulting condition
-	bool hault = false;
+	// init halting condition
+	bool halt = false;
+	int halt_count_down = 2;
 
 	// enter the MAIN WHILE loop
-	while (!hault) {
+	while (halt_count_down > 0) {
 		// init the countersss
 		uint8_t fetch_counter = reg->PC; // USELESS
 		uint8_t decode_counter = reg->PC - 1;
 		uint8_t execute_counter = reg->PC - 2;
 
 		// check if the counterss are valid
-		bool decode_valid = (decode_counter & 0b10000000) == 0;
-		bool execute_valid = (execute_counter & 0b10000000) == 0;
+		bool fetch_valid = halt_count_down >= 2;
+		bool decode_valid = ((decode_counter & 0b10000000) == 0) && (halt_count_down >= 1);
+		bool execute_valid = (execute_counter & 0b10000000) == 0 && (halt_count_down >= 0);
 
 		// ~~~ execute the instruction ~~~ //
 		if (execute_valid) {
@@ -61,14 +63,28 @@ int main() {
 		}
 
 		// ~~~ fetch the instruction ~~~ //
-		fetch_inst = fetch(inst_mem, reg);
+		if (fetch_valid) {
+			fetch_inst = fetch(inst_mem, reg);
+		}
 
-		// check if the fetch PCB is haulting
-		hault = (fetch_inst == 0xf000) || (cc == 0xff);
+		// check if the fetch PCB is halting
+		if (halt) {
+			halt_count_down--;
+		}else {
+			halt = (fetch_inst == 0xf000) || (cc == 0xff);
+			if (halt) {
+				halt_count_down--;
+			}
+		}
 
 		// increment the clock cycle counter
-		cc++;
+		cc += 1;
 	}
+
+	// pretty print everything
+	pretty_print_data_mem(data_mem);
+	pretty_print_reg(reg);
+	printf("Clock Cycles: %d\n", cc);
 
 	// kill all the MA
 	kill_data_mem(data_mem);
