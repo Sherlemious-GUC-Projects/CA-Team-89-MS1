@@ -64,18 +64,11 @@ int main() {
 		fetch_inst = fetch(inst_mem, reg);
 
 		// check if the fetch PCB is haulting
-		printf("fetch_inst at %d: %x\n", reg->PC - 1, fetch_inst);
-		hault = (fetch_inst == 0xf000);
+		hault = (fetch_inst == 0xf000) || (cc == 0xff);
 
 		// increment the clock cycle counter
 		cc++;
-		
-		hault = (cc > 20);
 	}
-
-
-	// print EVERYTHING
-	pretty_print_inst_mem(inst_mem);
 
 	// kill all the MA
 	kill_data_mem(data_mem);
