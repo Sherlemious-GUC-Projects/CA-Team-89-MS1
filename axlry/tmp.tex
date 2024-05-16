@@ -1,0 +1,320 @@
+\documentclass[a4paper,12pt]{article}
+\pagestyle{empty}
+\usepackage{sty}
+\usepackage{listings}
+
+\begin{document}
+\pagecolor{background}
+\color{foreground}
+
+%date
+\par{
+	\flushleft\large
+	16 MAy, 2024
+}
+
+%title
+\par{\Huge
+	\flushleft\usefont{T1}{qzc}{m}{n}
+	Documentation for the Computer Architecture Project
+}
+
+%line
+\line
+
+%body
+\section{Introduction}
+	\par{
+		This document is a report for the Computer Architecture (CA) project.
+		The project aims to simulate a fictional processor design and
+		architecture using C. The project at hand was one of four project
+		packages offered. The project packet of intrest is the Double McHarvard
+		with cheese circular shifts.
+	}
+	\par{
+		This package is using a Harvard architecture with one data bus and one
+		instruction bus. The processor has a \tt{8-bit} data bus and a
+		\tt{16-bit} instruction bus, while all the registers are \tt{8-bits}.
+		To elaborate, the processor has access to \tt{64} General Purpose
+		registers, a single status register, and a single program counter.
+		Furthermore, the processor has a \tt{8-bit} ALU. 
+	}
+
+\section{Methodology}
+	\par{
+		The project was implemented using \tt{C} and was designed to be as
+		modular as possible. To expand on this, the entire project consists of
+		multiple header files, each containing a specific part of the project,
+		and a single \tt{main.c} file that contains the main function. The
+		project was divided into three main parts, which will be explained in
+		detail below:
+		\ls{
+			The Memory Architecture.
+		}\ls{
+			The Instruction Set Architecture.
+		}\ls{
+			The Data Path.
+		}
+	}
+	\subsection{Memory Architecture}
+		\par{
+			The memory architecture was further divided into three parts to
+			ensure modularity. Each part was implemented in a separate header
+			file. A brief description will be provided below:
+			\ls{
+				The Data Memory.
+			}\ls{
+				The Instruction Memory.
+			}\ls{
+				The Register File.
+			}
+		}
+		\subsubsection{Data Memory}
+			\par{
+				The data memory was implemented using a pointer to an array of
+				\tt{8-bit} integers. To be more specific, the data type of the
+				pointer was \tt{uint8\_t}. The data memory was implemented in the
+				\tt{data\_memory.h} header file. Below is a brief description of
+				the functions implemented in the \tt{data\_memory.h} header file:
+			}
+			\ls{
+				Init Data Memory: This function `callocs' memory for the data
+				memory and returns a pointer to the allocated memory. The function
+				uses the \tt{calloc} function instead of the \tt{malloc} function
+				to ensure that the allocated memory is initialized to zero.
+			}\ls{
+				Kill Data Memory: This function `frees' the memory allocated for
+				the data memory. The function takes a pointer to the data memory
+				as an argument and `frees' the memory allocated for the data
+				memory.
+			}\ls{
+				Set Data Memory: This function sets the data at a specific address
+				in the data memory. The function takes a pointer to the data memory,
+				the address of the data to be set, and the data to be set as
+				arguments.
+			}\ls{
+				Get Data Memory: This function returns the data at a specific
+				address in the data memory. The function takes a pointer to the data
+				memory and the address of the data to be retrieved as arguments.
+			}\ls{
+				Copy Data Memory: This function copies the data memory. The function
+				takes a pointer to the data memory as an argument and returns a
+				pointer to the copied data memory using deep copy.
+			}\ls{
+				Pretty Print Data Memory: This function prints the data memory.
+				The function takes a pointer to the data memory as an argument
+				and prints the data memory in a human-readable format. For all
+				consecutive addresses with \tt{0x00} data, the function prints
+				the address range instead of printing each address
+				individually.
+			}\ls{
+				Pretty Print Diff Data Memory: This function prints the difference
+				between two data memories. The function takes two pointers to the
+				data memories as arguments and prints the difference between the
+				two data memories in a human-readable format. If the data at a
+				specific address is different between the two data memories, the
+				function prints the address and the old and new data. If there is
+				no difference between the two data memories, the function prints
+				`No Difference'.
+			}
+
+		\subsubsection{Instruction Memory}
+			\par{
+				The instruction memory was implemented using a pointer to an array of
+				\tt{16-bit} integers. To be more specific, the data type of the pointer
+				was \tt{uint16\_t}. The instruction memory was implemented in the
+				\tt{instruction\_memory.h} header file. For the sake of brevity, the
+				functions implemented in the \tt{instruction\_memory.h} header file
+				will not be described in detail as they are identical to the functions
+				implemented in the \tt{data\_memory.h} header file with the exception
+				of the data type of the pointer, and the lack thereof of the
+				\emph{Pretty Print Diff Data Memory} function.
+			}
+
+		\subsubsection{Register File}
+			\par{
+				The registers were implemented using a pointer to a structure that
+				contained an array of \tt{8-bit} integers for the general-purpose
+				registers, an \tt{8-bit} integer for the status register, and an
+				\emph{8-bit} integer for the program counter. The register file was
+				implemented in the \tt{register\_file.h} header file.
+				
+				To be as specific as possible, the structure used to represent the
+				registers was defined as follows:
+
+				\begin{lstlisting}
+					typedef struct {
+						uint8_t general_purpose_registers[64];
+						uint8_t status_register;
+						uint8_t program_counter;
+					} RegisterFile;
+				\end{lstlisting}
+
+				Finally below is a brief description of the functions implemented in
+				the \tt{register\_file.h} header file:
+			}
+			\ls{
+				Init Register File: This function initializes the register file, and
+				returns a pointer to the allocated memory. This function is identical
+				to the \emph{Init Data Memory} function with the exception of the data
+				type of the pointer.
+			}\ls{
+				Kill Register File: This function `frees' the memory allocated for the
+				register file. This function is identical to the \emph{Kill Data Memory}
+				function with the exception of the data type of the pointer.
+			}\ls{
+				Set Status Register flag: This function sets a specific flag in the
+				status register. The function takes a pointer to the register file, a
+				character representing the flag to be set, and a boolean representing
+				the value to set the flag to as arguments.
+			}\ls{
+				Get Status Register flag: This function returns the value of a specific
+				flag in the status register. The function takes a pointer to the register
+				file and a character representing the flag to be retrieved as arguments.
+			}\ls{
+				Copy Register File: This function copies the register file. This function
+				is identical to the \emph{Copy Data Memory} function with the exception of
+				the data type of the pointer.
+			}\ls{
+				Pretty Print Register File: This function prints the register file. This
+				function is identical to the \emph{Pretty Print Data Memory} function with
+				the exception of the data type of the pointer.
+			}
+	
+	\subsection{Instruction Set Architecture}
+		\par{
+			The instruction set architecture was implemented using a set of header
+			files, each containing a specific stage in the execution of an instruction.
+			A brief description of each stage will be provided below:
+			\ls{
+				The Fetch Stage.
+			}\ls{
+				The Decode Stage.
+			}\ls{
+				The Execute Stage.
+			}\ls{
+				The Assembly Code Parser*
+			}
+		}
+		\subsubsection{Fetch Stage}
+			\par{
+				The fetch stage was implemented in the \tt{fetch.h} header file. The
+				fetch stage is responsible for fetching the instruction from the
+				instruction memory and incrementing the program counter. 
+			}
+		
+		\subsubsection{Decode Stage}
+			\par{
+				The decode stage was implemented in the \tt{decode.h} header
+				file. The decode stage is responsible for decoding the
+				instruction and extracting the opcode and operands and creating
+				a structure to represent the instruction which will be denoted
+				as a \bf{Process Control Block} (PCB). The PCB was defined as
+				follows:
+				\begin{lstlisting}
+					typedef struct {
+						uint8_t opcode; // 4 bits
+						uint8_t operand1; // 6 bits
+						uint8_t operand2; // 6 bits
+						uint8_t R1; // 8 bits
+						uint8_t R2; // 8 bits
+						uint8_t IMM; // 8 bits
+						bool is_R_format; // 1 bit
+					} PCB;
+				\end{lstlisting}
+			}
+			\par{
+				The decode stage had two functions: the \tt{decode} function and
+				the \tt{pretty\_print\_pcb} function. The \tt{decode} function
+				takes a pointer to the instruction memory and a pointer to the
+				register file as arguments and returns a pointer to the PCB. The
+				\tt{pretty\_print\_pcb} function takes a pointer to the PCB as an
+				argument and prints the PCB in a human-readable format.
+			}
+
+		\subsubsection{Execute Stage}
+			\par{
+				The execute stage was implemented in the \tt{execute.h} header file.
+				The execute stage is responsible for executing the instruction
+				represented by the PCB. The execute stage had a single function
+				called \tt{execute} which takes a pointer to the PCB and a pointer
+				to the register file as arguments and returns nothing.
+			}
+			\par{
+				The execute function was implemented using a switch statement that
+				switches on the opcode of the PCB. The switch statement calls the
+				appropriate function based on the opcode of the PCB, and handles
+				the updating of the status register if necessary.
+			}
+
+		\subsubsection{Assembly Code Parser}
+			\par{
+				This is the only header file that is located in the \tt{ISA}
+				directory but is not part of the instruction set architecture.
+				The assembly code parser was implemented in the \tt{parser\_asm.h}
+				header file. This header file is responsible for parsing the
+				assembly code line by line. For each line of assembly code, the
+				parser tokenizes the line and converts the tokens to an instruction
+				in the form of a \tt{uint16\_t} integer. The parser then writes the
+				instruction to the instruction memory. Finally, as the parser reaches
+				the \tt{EOF} of the assembly code file, it appends to the instruction
+				memory a \tt{0xf000} instruction to signify the end of the program and
+				a halt instruction. Once the parser has finished parsing the assembly
+				code, it returns a pointer to the instruction memory.
+			}
+	
+	\subsection{Data Path}
+		\par{
+			The data path was implemented in the \tt{main.c} file. The data path
+			is responsible for fetching the instruction from the instruction memory,
+			decoding the instruction, executing the instruction, and updating the
+			register file and data memory accordingly.
+		}
+		\par{
+			The main function first initializes the data memory, instruction memory,
+			and register file. The main function then calls the assembly code parser
+			to parse the assembly code and write the instructions to the instruction
+			memory. Then the main function enters the main loop of the data path, which will
+			be described in detail in the next paragraph. Finally, the main function
+			frees the memory allocated for the data memory, instruction memory, and
+			register file, And prints the final state of the data memory and register
+			file.
+		}
+		\par{
+			The main loop of the data path consists of three stages: the fetch stage,
+			the decode stage, and the execute stage. All these stages are occurring
+			within the same clock cycle. The main loop keeps track which instruction
+			should be fetched, decoded, or executed by using the program counter and
+			deviations from it. Thus it would take exaclty $3 + (n - 1)$ clock cycles
+			to execute the program where $n$ is the number of instructions in the
+			assembly code. This holds if there are no jumps or branches in the
+			assembly code.
+		}
+
+
+\section{Results}
+	\par{
+		The results of the tests are as follows:
+		\ls{
+			The average time taken by the \tt{FIFO} scheduler is $3.3$ seconds per
+			execution.
+		}\ls{
+			The average time taken by the \tt{RR} scheduler is $3.1$ seconds per
+			execution.
+		}\ls{
+			The average time taken by the \tt{NORMAL} scheduler is $3.3$ seconds per
+			execution.
+		}\ls{
+			The avreage CPU Utilization of all three schedulers where the same. This KPI
+			was particularly difficult to measure as the CPU Utilization was being affected
+			by other processes running on the system. 
+			\ls{
+				This could also be attributed to the fact that the threads were all executing
+				the same function, even though the fibonacci function grew exponentially with
+				respect to the thread id but it did not affect the CPU Utilization \u{noticeably}.
+
+			}
+		}
+	}
+
+\end{document}
