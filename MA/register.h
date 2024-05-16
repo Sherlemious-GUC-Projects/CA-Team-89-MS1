@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define NUM_GPRS 64
 
@@ -98,6 +99,16 @@ void _pretty_print_SREG(struct reg_t* reg) {
 	printf("Z: %d\n", get_reg_flag(reg, 'Z'));
 }
 
+struct reg_t* copy_reg(struct reg_t* reg) {
+	struct reg_t* new_reg = init_reg();
+	for (int i = 0; i < NUM_GPRS; i++) {
+		new_reg->GPRS[i] = reg->GPRS[i];
+	}
+	new_reg->SREG = reg->SREG;
+	new_reg->PC = reg->PC;
+	return new_reg;
+}
+
 void pretty_print_reg(struct reg_t* reg) {
 	printf("===============REGISTERS==============\n");
 	printf("----------GPRS----------\n");
@@ -125,6 +136,30 @@ void pretty_print_reg(struct reg_t* reg) {
 
 	printf("----------PC----------\n");
 	printf("0x%02x\n", reg->PC);
+	printf("======================================\n");
+}
+
+void pretty_print_diff_reg(struct reg_t *old_reg, struct reg_t *new_reg) {
+	printf("=============DIFF REGISTERS==========-\n");
+	bool diff = false;
+	for (int i = 0; i < NUM_GPRS; i++) {
+		if (old_reg->GPRS[i] != new_reg->GPRS[i]) {
+			if (!diff) {
+				printf("----------GPRS----------\n");
+			}
+			diff = true;
+			printf("0x%02x: 0x%02x -> 0x%02x\n", i, old_reg->GPRS[i], new_reg->GPRS[i]);
+		}
+	}
+	if (old_reg->SREG != new_reg->SREG) {
+		printf("----------SREG----------\n");
+		diff = true;
+		printf("SREG: 0x%02x -> 0x%02x\n", old_reg->SREG, new_reg->SREG);
+	}
+
+	if (!diff) {
+		printf("No difference\n");
+	}
 	printf("======================================\n");
 }
 
