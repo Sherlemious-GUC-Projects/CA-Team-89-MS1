@@ -48,6 +48,7 @@
 		and a single \tt{main.c} file that contains the main function. The
 		project was divided into three main parts, which will be explained in
 		detail below:
+
 		\ls{
 			The Memory Architecture.
 		}\ls{
@@ -77,6 +78,9 @@
 				\tt{data\_memory.h} header file. Below is a brief description of
 				the functions implemented in the \tt{data\_memory.h} header file:
 			}
+
+			\newpage
+
 			\ls{
 				Init Data Memory: This function `callocs' memory for the data
 				memory and returns a pointer to the allocated memory. The function
@@ -130,6 +134,8 @@
 				of the data type of the pointer, and the lack thereof of the
 				\emph{Pretty Print Diff Data Memory} function.
 			}
+	
+		\newpage
 
 		\subsubsection{Register File}
 			\par{
@@ -290,31 +296,64 @@
 			assembly code. This holds if there are no jumps or branches in the
 			assembly code.
 		}
+		\par{
+			To elaborate more on the algorithm that made this level of concurrency
+			possible, the main loop has within it a \\{i} variable that is firstly
+			initialized to zero. With every iteration of the main loop, the \tt{i}
+			variable is incremented by one. The \tt{i} variable is then used to
+			determine whether a decode or execute stage should be executed this
+			iteration or not. The algorithm is as follows:
+		}
+		\cd{The concurrency algorithm}{Instructions $\in \bb Z^{max}$}{\tt{NULL}}{
+			\tt{i}, \tt{HALT} $\gets 0$ \\
+			\tt{input\_for\_decoder} $\gets$ \tt{NULL} \\
+			\tt{input\_for\_executor} $\gets$ \tt{NULL} \\
+			\While{\tt{HALT} $\neq 1$}{
+				\If{\tt i $\geq 2$}{
+					execute(\tt{input\_for\_executor}) \\
+					\If{\tt{input\_for\_executor} $\to$ opcode $= \tt{0xF}$}{
+						\tt{HALT} $\gets 1$ \\
+					}
+
+					\If{\tt{input\_for\_executor} $\to$ opcode $= \tt{BRANCH}$}{
+						\tt i $\gets 0$ \\
+						\tt{PC} $\gets$ \tt{input\_for\_executor} $\to$ IMM \\
+					}
+				}
+				\If{\tt i $\geq 1$}{
+					\tt{input\_for\_executor} $\gets$ decode(\tt{input\_for\_decoder}) \\
+				}
+				\If{\tt i $\geq 0$}{
+					\tt{input\_for\_decoder} $\gets$ fetch\_instruction(\tt{PC}) \\
+				}
+			}
+		}
+		\par{
+			As can be seen from the algorithm above, whenever a branch instruction
+			is encountered, the \tt i variable is reset to zero and the program
+			counter is updated to the immediate value of the branch instruction.
+			Furthermore, the algorithm also checks for the \tt{HALT} instruction
+			and terminates the program if it is encountered.
+		}
 
 
 \section{Results}
 	\par{
-		The results of the tests are as follows:
-		\ls{
-			The average time taken by the \tt{FIFO} scheduler is $3.3$ seconds per
-			execution.
-		}\ls{
-			The average time taken by the \tt{RR} scheduler is $3.1$ seconds per
-			execution.
-		}\ls{
-			The average time taken by the \tt{NORMAL} scheduler is $3.3$ seconds per
-			execution.
-		}\ls{
-			The avreage CPU Utilization of all three schedulers where the same. This KPI
-			was particularly difficult to measure as the CPU Utilization was being affected
-			by other processes running on the system. 
-			\ls{
-				This could also be attributed to the fact that the threads were all executing
-				the same function, even though the fibonacci function grew exponentially with
-				respect to the thread id but it did not affect the CPU Utilization \u{noticeably}.
-
-			}
-		}
+		The project was tested using a set of assembly code files that were
+		designed to test the functionality of the processor. The first test
+		was a simple addition test that added two numbers and stored the result
+		in a register. The second test was a factorial test that calculated the
+		factorial of a number and stored the result in memory. The third test
+		was a cumulative sum test that calculated the cumulative sum of a number
+		and stored the result in memory.
+	}
+	\par{
+		The first test was designed to insure that the processor did manage to
+		do the assembly code with in the estimated number of clock cycles. The
+		second test and the third test were designed to test the logic of the
+		processor, in particular the branching and jumping logic. The tests were
+		successful and the processor was able to execute the assembly code
+		correctly.
 	}
 
 \end{document}
