@@ -1,7 +1,7 @@
 #ifndef DECODE_H
 #define DECODE_H
 
-PCB_t* decode(uint16_t inst, reg_t *reg, PCB_t *pcb) {
+void decode(uint16_t inst, PCB_t *pcb, reg_t *reg) {
 	// get the OPCode
 	pcb->OPCode = (inst & 0b1111000000000000) >> 12;
 	
@@ -25,9 +25,6 @@ PCB_t* decode(uint16_t inst, reg_t *reg, PCB_t *pcb) {
 	} else {
 		pcb->IMM = pcb->operand2;
 	}
-	
-	
-	return pcb;
 }
 
 void pretty_print_pcb(PCB_t *pcb) {

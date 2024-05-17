@@ -41,6 +41,8 @@ typedef struct reg_t {
 	uint8_t GPRS[NUM_GPRS];
 	uint8_t SREG;
 	uint8_t PC;
+	uint8_t i;
+	bool halt;
 } reg_t; 
 
 reg_t* init_reg() {
@@ -49,6 +51,8 @@ reg_t* init_reg() {
 		printf("Error: Memory allocation failed\n");
 		exit(1);
 	}
+	reg->i = 0;
+	reg->halt = false;
 	return reg;
 }
 

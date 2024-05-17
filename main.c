@@ -19,7 +19,7 @@
 
 int main() {
 	// init the path to the asm
-	char *path = "asm/addition.asm";
+	char *path = "asm/cumsum.asm";
 
 	// init all the MA
 	data_mem_t data_mem = init_data_mem();
@@ -32,68 +32,48 @@ int main() {
 	// init the clock cycle counter cc = 3 + (number of instructions - 1)
 	uint8_t cc = 0;
 
-	// init the PCBsss
-	uint16_t fetch_inst;
-	PCB_t *decode_pcb = init_pcb();
-	PCB_t *execute_pcb = init_pcb();
-
-	// init halting condition
-	bool halt = false;
-	int halt_count_down = 2;
+	// init the states
+	uint16_t *decode_input = (uint16_t *) calloc(1, sizeof(uint16_t));
+	PCB_t *execute_input = init_pcb();
 
 	// enter the MAIN WHILE loop
-	while (halt_count_down > 0) {
-		// init the countersss
-		uint8_t fetch_counter = reg->PC; // USELESS
-		uint8_t decode_counter = reg->PC - 1;
-		uint8_t execute_counter = reg->PC - 2;
-
-		// check if the counterss are valid
-		bool fetch_valid = halt_count_down >= 2;
-		bool decode_valid = ((decode_counter & 0b10000000) == 0) && (halt_count_down >= 1);
-		bool execute_valid = (execute_counter & 0b10000000) == 0 && (halt_count_down >= 0);
-
-		// ~~~ make a copy of the regs and the data mem ~~~ //
+	while (!(reg->halt)) {
+		// ~~~ make a copy of the registers and data memory ~~~ //
 		reg_t *old_reg = copy_reg(reg);
 		data_mem_t old_data_mem = copy_data_mem(data_mem);
 
-		// ~~~ execute the instruction ~~~ //
+		// ~~~ check validity ~~~ //
+		bool fetch_valid = reg->i >= 0;
+		bool decode_valid = reg->i >= 1;
+		bool execute_valid = reg->i >= 1;
+
+		// ~~~ execute ~~~ //
 		if (execute_valid) {
-			// printf("\n&&&&&&&&&&& BEFORE EXECUTE &&&&&&&&&&&\n");
-			// printf("PC for the execute: %d\n", execute_counter);
-			// pretty_print_pcb(execute_pcb);
-
-			execute(execute_pcb, reg, data_mem);
-
-			// printf("\n&&&&&&&&&&& AFTER EXECUTE &&&&&&&&&&&\n");
-			// pretty_print_diff_reg(old_reg, reg);
-			// pretty_print_diff_data_mem(old_data_mem, data_mem);
+			execute(execute_input, reg, data_mem);
 		}
 
-		// ~~~ decode the instruction ~~~ //
+		// ~~~ decode ~~~ //
 		if (decode_valid) {
-			decode_pcb = decode(fetch_inst, reg, decode_pcb);
-			execute_pcb = decode_pcb;
+			decode(*decode_input, execute_input, reg);
 		}
 
-		// ~~~ fetch the instruction ~~~ //
+		// ~~~ fetch ~~~ //
 		if (fetch_valid) {
-			fetch_inst = fetch(inst_mem, reg);
+			fetch(reg, decode_input, inst_mem);
 		}
 
-		// check if the fetch PCB is halting
-		if (!halt) 
-			halt = (fetch_inst == 0xf000) || (cc == 0xff);
-		if (halt)
-			halt_count_down--;
+		// ~~~ increment the clock cycle ~~~ //
+		if (!reg->halt){
+			cc++;
+		}
+		reg->i += 1;
 
-
-		// increment the clock cycle counter
-		cc += 1;
-
-		// free the old reg and data mem
+		// ~~~ kill the old registers and data memory ~~~ //
 		kill_reg(old_reg);
 		kill_data_mem(old_data_mem);
+
+		// ~~~ check halting condition ~~~ //
+		reg->halt = reg->halt || (cc > 100);
 	}
 
 	// pretty print everything
@@ -103,6 +83,10 @@ int main() {
 	pretty_print_data_mem(data_mem);
 	pretty_print_reg(reg);
 	printf("Clock Cycles: %d\n", cc);
+
+	// kill all states
+	free(decode_input);
+	free(execute_input);
 
 	// kill all the MA
 	kill_data_mem(data_mem);

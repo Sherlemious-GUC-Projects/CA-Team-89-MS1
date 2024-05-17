@@ -81,6 +81,8 @@ reg_t* copy_reg(reg_t* reg) {
 	}
 	new_reg->SREG = reg->SREG;
 	new_reg->PC = reg->PC;
+	new_reg->i = reg->i;
+	new_reg->halt = reg->halt;
 	return new_reg;
 }
 

@@ -198,6 +198,7 @@ void execute(PCB_t *pcb, reg_t *reg, data_mem_t data_mem) {
 			// Do the Branch if Equal to Zero
 			if (pcb->R1 == 0) {
 				reg->PC = reg->PC + 1 + pcb->IMM;
+				reg->i = 0;
 			}
 			break;
 		case 5://AND
@@ -223,6 +224,7 @@ void execute(PCB_t *pcb, reg_t *reg, data_mem_t data_mem) {
 		case 7://JR
 			// Do the Jump Register
 			reg->PC = concat(pcb->R1, pcb->R2);
+			reg->i = 0;
 			break;
 		case 8://SLC
 			// Do the Shift Left Circular
@@ -253,7 +255,7 @@ void execute(PCB_t *pcb, reg_t *reg, data_mem_t data_mem) {
 			set_data(data_mem, pcb->IMM, pcb->R1);
 			break;
 		case 15://HALT
-			printf("Warning: trying to execute a halt command\n");
+			reg->halt = true;
 			break;
 		default:
 			printf("Error: Invalid OPCode: %d\n", pcb->OPCode);

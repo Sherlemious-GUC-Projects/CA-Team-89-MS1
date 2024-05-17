@@ -1,13 +1,12 @@
 #ifndef FETCH_H
 #define FETCH_H
 
-uint16_t fetch(inst_mem_t inst_mem, reg_t *reg) {
+void fetch(reg_t *reg, uint16_t *curr_inst, inst_mem_t inst_mem) {
 	// get the instruction at the PC
-	uint16_t curr_inst = get_inst(inst_mem, reg->PC);
+	*curr_inst = get_inst(inst_mem, reg->PC);
 	
 	// increment the PC
 	reg->PC++;
-	return curr_inst;
 }
 
 #endif
