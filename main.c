@@ -19,7 +19,7 @@
 
 int main() {
 	// init the path to the asm
-	char *path = "asm/cumsum.asm";
+	char *path = "asm/factorial.asm";
 
 	// init all the MA
 	data_mem_t data_mem = init_data_mem();

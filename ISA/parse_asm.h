@@ -32,6 +32,14 @@ uint8_t parse_OPCode(char *token) {
 	}
 }
 
+bool is_r_format(uint8_t OPCode) {
+	if ((OPCode >= 0 && OPCode <=2) || (OPCode >= 5 && OPCode <= 7)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 void read_asm(uint16_t *inst_mem, char *path) {
 	// open the file and check if its there
 	FILE *fp = fopen(path, "r");
@@ -61,33 +69,51 @@ void read_asm(uint16_t *inst_mem, char *path) {
 				// parse the OPCode (error handling is done in the function)
 				OPCode = parse_OPCode(token);
 			} else if (j == 1) {
-				// check if the operand is a valid hex number
-				if (strspn(token, "0123456789abcdef") != strlen(token)) {
-					printf("Error: Invalid operand\n");
+				// check if the first char in the operand is `R` if so remove it
+				if (strncmp(token, "R", 1) == 0) {
+					token++;
+				}else {
+					printf("Error: Invalid operand: %s\n", token);
 					exit(1);
 				}
-
-				// parse the first operand
-				operand1 = (int)strtol(token, NULL, 16);
+				// parse the first operand which should be a number from 0 to 63
+				operand1 = atoi(token);
 
 				// check if the operand is within the range of 6 bits
-				if (operand1 > 0b111111) {
-					printf("Error: Operand out of range\n");
+				if (!(operand1 >= 0 && operand1 <= 63)) {
+					printf("Error: Operand out of range: %d\n", operand1);
 					exit(1);
 				}
 			} else if (j == 2) {
-				// check if the operand is a valid hex number
-				if (strspn(token, "0123456789abcdef") != strlen(token)) {
-					printf("Error: Invalid operand\n");
-					exit(1);
-				}
-				// parse the second operand
-				operand2 = (int)strtol(token, NULL, 16);
+				// check if the opcode is an R format
+				bool is_r = is_r_format(OPCode);
 
-				// check if the operand is within the range of 6 bits
-				if (operand2 > 0b111111) {
-					printf("Error: Operand out of range\n");
-					exit(1);
+				// parse the second operand
+				if (is_r) {
+					// check if the first char in the operand is `R` if so remove it
+					if (strncmp(token, "R", 1) == 0) {
+						token++;
+					}else {
+						printf("Error: Invalid operand: %s\n", token);
+						exit(1);
+					}
+					// parse the first operand which should be a number from 0 to 63
+					operand2 = atoi(token);
+
+					// check if the operand is within the range of 6 bits
+					if (!(operand2 >= 0 && operand2 <= 63)) {
+						printf("Error: Operand out of range: %d\n", operand2);
+						exit(1);
+					}
+				} else {
+					// parse the second operand which should be a number from 0 to 0b111111
+					operand2 = atoi(token);
+
+					// check if the operand is within the range of 6 bits
+					if (!(operand2 >= 0 && operand2 <= 0b111111)) {
+						printf("Error: Operand out of range: %d\n", operand2);
+						exit(1);
+					}
 				}
 			} else if (j == 3) {
 				// check if the message starts with #
