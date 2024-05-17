@@ -9,16 +9,18 @@
 #define DATA_WORD_SIZE 8
 #define DATA_MEMORY_SIZE 2048
 
-uint8_t *init_data_mem() {
-	uint8_t *data_mem = (uint8_t *)calloc(DATA_MEMORY_SIZE, DATA_WORD_SIZE);
+typedef uint8_t* data_mem_t;
+
+data_mem_t init_data_mem() {
+	data_mem_t data_mem = (uint8_t *)calloc(DATA_MEMORY_SIZE, DATA_WORD_SIZE);
 	return data_mem;
 }
 
-void kill_data_mem( uint8_t *data_mem) {
+void kill_data_mem( data_mem_t data_mem) {
 	free(data_mem);
 }
 
-void set_data( uint8_t *data_mem, int address, uint8_t value) {
+void set_data( data_mem_t data_mem, int address, uint8_t value) {
 	// check if the address is valid
 	if (!(address >= 0 && address < DATA_MEMORY_SIZE)) {
 		printf("Invalid address: %d\n", address);
@@ -32,7 +34,7 @@ void set_data( uint8_t *data_mem, int address, uint8_t value) {
 	data_mem[address] = value;
 }
 
-uint8_t get_data( uint8_t *data_mem, int address) {
+uint8_t get_data( data_mem_t data_mem, int address) {
 	// check if the address is valid
 	if (!(address >= 0 && address < DATA_MEMORY_SIZE)) {
 		printf("Invalid address: %d\n", address);
@@ -41,8 +43,8 @@ uint8_t get_data( uint8_t *data_mem, int address) {
 	return data_mem[address];
 }
 
-uint8_t *copy_data_mem( uint8_t *data_mem) {
-	uint8_t *new_data_mem = (uint8_t *)calloc(DATA_MEMORY_SIZE, DATA_WORD_SIZE);
+data_mem_t copy_data_mem( uint8_t *data_mem) {
+	data_mem_t new_data_mem = (uint8_t *)calloc(DATA_MEMORY_SIZE, DATA_WORD_SIZE);
 	int i;
 	for (i = 0; i < DATA_MEMORY_SIZE; i++) {
 		new_data_mem[i] = data_mem[i];
@@ -50,7 +52,7 @@ uint8_t *copy_data_mem( uint8_t *data_mem) {
 	return new_data_mem;
 }
 
-void pretty_print_data_mem( uint8_t *data_mem) {
+void pretty_print_data_mem( data_mem_t data_mem) {
 	// loop over all the mem if there is non-zero value print it
 	// if the value is zero print all the consecutive zeros as one line
 	printf("==============DATA MEMORY=============\n");
@@ -76,7 +78,7 @@ void pretty_print_data_mem( uint8_t *data_mem) {
 	printf("======================================\n");
 }
 
-void pretty_print_diff_data_mem( uint8_t *old_data_mem, uint8_t *new_data_mem) {
+void pretty_print_diff_data_mem( data_mem_t old_data_mem, uint8_t *new_data_mem) {
 	printf("============DIFF DATA MEMORY==========\n");
 	bool diff = false;
 	int i;

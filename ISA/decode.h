@@ -4,8 +4,7 @@
 // global header files
 #include <stdbool.h>
 
-
-struct PCB_t {
+typedef struct PCB_t {
 	uint8_t OPCode; // 4 bits
 	uint8_t operand1; // 6 bits
 	uint8_t operand2; // 6 bits
@@ -13,12 +12,12 @@ struct PCB_t {
 	uint8_t R2; // 8 bits
 	uint8_t IMM; // 8 bits
 	bool is_R_format; // 1 bit
-};
+} PCB_t;
 
 
-struct PCB_t decode(uint16_t inst, struct reg_t *reg) {
+PCB_t decode(uint16_t inst, reg_t *reg) {
 	// init the PCB
-	struct PCB_t pcb;
+	PCB_t pcb;
 	
 	// get the OPCode
 	pcb.OPCode = (inst & 0b1111000000000000) >> 12;
@@ -48,7 +47,7 @@ struct PCB_t decode(uint16_t inst, struct reg_t *reg) {
 	return pcb;
 }
 
-void pretty_print_pcb(struct PCB_t pcb) {
+void pretty_print_pcb(PCB_t pcb) {
 	printf("==================PCB=================\n");
 	printf("OPCode: 0x%02x\n", pcb.OPCode);
 	printf("Operand1: 0x%02x\n", pcb.operand1);

@@ -9,16 +9,18 @@
 #define INSTRUCTION_WORD_SIZE 16
 #define INSTRUCTION_MEMORY_SIZE 1024
 
-uint16_t *init_inst_mem() {
-	uint16_t *inst_mem = (uint16_t *)calloc(INSTRUCTION_MEMORY_SIZE, INSTRUCTION_WORD_SIZE);
+typedef uint16_t *inst_mem_t;
+
+inst_mem_t init_inst_mem() {
+	inst_mem_t inst_mem = (uint16_t *)calloc(INSTRUCTION_MEMORY_SIZE, INSTRUCTION_WORD_SIZE);
 	return inst_mem;
 }
 
-void kill_inst_mem( uint16_t *inst_mem) {
+void kill_inst_mem( inst_mem_t inst_mem) {
 	free(inst_mem);
 }
 
-void set_inst( uint16_t *inst_mem, int address, uint16_t value) {
+void set_inst( inst_mem_t inst_mem, int address, uint16_t value) {
 	// check if the address is valid
 	if (!(address >= 0 && address < INSTRUCTION_MEMORY_SIZE)) {
 		printf("Invalid address: %d\n", address);
@@ -32,7 +34,7 @@ void set_inst( uint16_t *inst_mem, int address, uint16_t value) {
 	inst_mem[address] = value;
 }
 
-uint16_t get_inst( uint16_t *inst_mem, int address) {
+uint16_t get_inst( inst_mem_t inst_mem, int address) {
 	// check if the address is valid
 	if (!(address >= 0 && address < INSTRUCTION_MEMORY_SIZE)) {
 		printf("Invalid address: %d\n", address);
@@ -41,7 +43,7 @@ uint16_t get_inst( uint16_t *inst_mem, int address) {
 	return inst_mem[address];
 }
 
-void pretty_print_inst_mem( uint16_t *inst_mem) {
+void pretty_print_inst_mem( inst_mem_t inst_mem) {
 	// loop over all the mem if there is non-zero value print it
 	// if the value is zero print all the consecutive zeros as one line
 	printf("==========INSTRUCTION MEMORY==========\n");

@@ -20,9 +20,9 @@ int main() {
 	char *path = "asm/addition.asm";
 
 	// init all the MA
-	uint8_t *data_mem = init_data_mem();
-	uint16_t *inst_mem = init_inst_mem();
-	struct reg_t *reg = init_reg();
+	data_mem_t data_mem = init_data_mem();
+	inst_mem_t inst_mem = init_inst_mem();
+	reg_t *reg = init_reg();
 
 	// read the assembly code into the memory
 	read_asm(inst_mem, path);
@@ -32,8 +32,8 @@ int main() {
 
 	// init the PCBsss
 	uint16_t fetch_inst;
-	struct PCB_t decode_pcb;
-	struct PCB_t execute_pcb;
+	PCB_t decode_pcb;
+	PCB_t execute_pcb;
 
 	// init halting condition
 	bool halt = false;
@@ -52,18 +52,20 @@ int main() {
 		bool execute_valid = (execute_counter & 0b10000000) == 0 && (halt_count_down >= 0);
 
 		// ~~~ make a copy of the regs and the data mem ~~~ //
-		struct reg_t *old_reg = copy_reg(reg);
-		uint8_t *old_data_mem = copy_data_mem(data_mem);
+		reg_t *old_reg = copy_reg(reg);
+		data_mem_t old_data_mem = copy_data_mem(data_mem);
 
 		// ~~~ execute the instruction ~~~ //
 		if (execute_valid) {
-			printf("\n&&&&&&&&&&& BEFORE EXECUTE &&&&&&&&&&&\n");
-			printf("PC for the execute: %d\n", execute_counter);
-			pretty_print_pcb(execute_pcb);
+			// printf("\n&&&&&&&&&&& BEFORE EXECUTE &&&&&&&&&&&\n");
+			// printf("PC for the execute: %d\n", execute_counter);
+			// pretty_print_pcb(execute_pcb);
+
 			execute(execute_pcb, reg, data_mem);
-			printf("\n&&&&&&&&&&& AFTER EXECUTE &&&&&&&&&&&\n");
-			pretty_print_diff_reg(old_reg, reg);
-			pretty_print_diff_data_mem(old_data_mem, data_mem);
+
+			// printf("\n&&&&&&&&&&& AFTER EXECUTE &&&&&&&&&&&\n");
+			// pretty_print_diff_reg(old_reg, reg);
+			// pretty_print_diff_data_mem(old_data_mem, data_mem);
 		}
 
 		// ~~~ decode the instruction ~~~ //
@@ -78,14 +80,11 @@ int main() {
 		}
 
 		// check if the fetch PCB is halting
-		if (halt) {
-			halt_count_down--;
-		}else {
+		if (!halt) 
 			halt = (fetch_inst == 0xf000) || (cc == 0xff);
-			if (halt) {
-				halt_count_down--;
-			}
-		}
+		if (halt)
+			halt_count_down--;
+
 
 		// increment the clock cycle counter
 		cc += 1;

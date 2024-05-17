@@ -6,15 +6,14 @@
 
 #define NUM_GPRS 64
 
-
-struct reg_t {
+typedef struct reg_t {
 	uint8_t GPRS[NUM_GPRS];
 	uint8_t SREG;
 	uint8_t PC;
-};
+} reg_t;
 
-struct reg_t* init_reg() {
-	struct reg_t* reg = (struct reg_t*)calloc(1, sizeof(struct reg_t));
+reg_t* init_reg() {
+	reg_t* reg = (reg_t*)calloc(1, sizeof(reg_t));
 	if (reg == NULL) {
 		printf("Error: Memory allocation failed\n");
 		exit(1);
@@ -22,11 +21,11 @@ struct reg_t* init_reg() {
 	return reg;
 }
 
-void kill_reg(struct reg_t* reg) {
+void kill_reg(reg_t* reg) {
 	free(reg);
 }
 
-uint8_t get_reg_flag(struct reg_t* reg, char flag) {
+uint8_t get_reg_flag(reg_t* reg, char flag) {
 	switch (flag) {
 		case 'C':
 			return (reg->SREG & 0b00010000) >> 4;
@@ -44,7 +43,7 @@ uint8_t get_reg_flag(struct reg_t* reg, char flag) {
 	}
 }
 
-void set_reg_flag(struct reg_t* reg, char flag, uint8_t value) {
+void set_reg_flag(reg_t* reg, char flag, uint8_t value) {
 	if (value != 0 && value != 1) {
 		printf("Error: Invalid value: %d\n", value);
 		exit(1);
@@ -91,7 +90,7 @@ void set_reg_flag(struct reg_t* reg, char flag, uint8_t value) {
 	}
 }
 
-void _pretty_print_SREG(struct reg_t* reg) {
+void _pretty_print_SREG(reg_t* reg) {
 	printf("C: %d\n", get_reg_flag(reg, 'C'));
 	printf("V: %d\n", get_reg_flag(reg, 'V'));
 	printf("N: %d\n", get_reg_flag(reg, 'N'));
@@ -99,8 +98,8 @@ void _pretty_print_SREG(struct reg_t* reg) {
 	printf("Z: %d\n", get_reg_flag(reg, 'Z'));
 }
 
-struct reg_t* copy_reg(struct reg_t* reg) {
-	struct reg_t* new_reg = init_reg();
+reg_t* copy_reg(reg_t* reg) {
+	reg_t* new_reg = init_reg();
 	for (int i = 0; i < NUM_GPRS; i++) {
 		new_reg->GPRS[i] = reg->GPRS[i];
 	}
@@ -109,7 +108,7 @@ struct reg_t* copy_reg(struct reg_t* reg) {
 	return new_reg;
 }
 
-void pretty_print_reg(struct reg_t* reg) {
+void pretty_print_reg(reg_t* reg) {
 	printf("===============REGISTERS==============\n");
 	printf("----------GPRS----------\n");
 	int start = 0;
@@ -139,7 +138,7 @@ void pretty_print_reg(struct reg_t* reg) {
 	printf("======================================\n");
 }
 
-void pretty_print_diff_reg(struct reg_t *old_reg, struct reg_t *new_reg) {
+void pretty_print_diff_reg(reg_t *old_reg, reg_t *new_reg) {
 	printf("=============DIFF REGISTERS==========-\n");
 	bool diff = false;
 	for (int i = 0; i < NUM_GPRS; i++) {

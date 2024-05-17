@@ -12,7 +12,7 @@ uint16_t concat(uint8_t a, uint8_t b) {
 }
 
 
-void handle_carry(struct PCB_t pcb, struct reg_t *reg) {
+void handle_carry(PCB_t pcb, reg_t *reg) {
 	// check the OPCode
 	if (pcb.OPCode != 0x0) {
 		printf("Error: Invalid OPCode: %d\n", pcb.OPCode);
@@ -34,7 +34,7 @@ void handle_carry(struct PCB_t pcb, struct reg_t *reg) {
 }
 
 
-void handle_overflow(struct PCB_t pcb, struct reg_t *reg) {
+void handle_overflow(PCB_t pcb, reg_t *reg) {
 	// check the OPCode
 	if (pcb.OPCode == 0x0) { // if the OPCode is ADD
 		// init the mask
@@ -80,7 +80,7 @@ void handle_overflow(struct PCB_t pcb, struct reg_t *reg) {
 	}
 }
 
-void handle_negative(struct PCB_t pcb, struct reg_t *reg) {
+void handle_negative(PCB_t pcb, reg_t *reg) {
 	// check the OPCode
 	if (
 		pcb.OPCode == 0x0 ||
@@ -109,7 +109,7 @@ void handle_negative(struct PCB_t pcb, struct reg_t *reg) {
 }
 
 
-void handle_sign(struct PCB_t pcb, struct reg_t *reg) {
+void handle_sign(PCB_t pcb, reg_t *reg) {
 	// check the OPCode
 	if (
 		pcb.OPCode == 0x0 ||
@@ -127,7 +127,7 @@ void handle_sign(struct PCB_t pcb, struct reg_t *reg) {
 }
 
 
-void handle_zero(struct PCB_t pcb, struct reg_t *reg) {
+void handle_zero(PCB_t pcb, reg_t *reg) {
 	// check the OPCode
 	if (
 		pcb.OPCode == 0x0 ||
@@ -153,7 +153,7 @@ void handle_zero(struct PCB_t pcb, struct reg_t *reg) {
 }
 
 
-void execute(struct PCB_t pcb, struct reg_t *reg, uint8_t *data_mem) {
+void execute(PCB_t pcb, reg_t *reg, data_mem_t data_mem) {
 	// match each case and execute the instruction
 	switch (pcb.OPCode) {
 		case 0://ADD
