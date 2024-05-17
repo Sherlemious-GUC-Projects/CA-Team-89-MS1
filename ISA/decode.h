@@ -22,8 +22,10 @@ void decode(uint16_t inst, PCB_t *pcb, reg_t *reg) {
 	pcb->R1 = reg->GPRS[pcb->operand1];
 	if (pcb->is_R_format) {
 		pcb->R2 = reg->GPRS[pcb->operand2];
+		pcb->IMM = 0;
 	} else {
 		pcb->IMM = pcb->operand2;
+		pcb->R2 = 0;
 	}
 }
 

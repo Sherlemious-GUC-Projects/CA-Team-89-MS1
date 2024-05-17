@@ -19,7 +19,7 @@
 
 int main() {
 	// init the path to the asm
-	char *path = "asm/cumsum.asm";
+	char *path = "asm/test_jump.asm";
 
 	// init all the MA
 	data_mem_t data_mem = init_data_mem();
@@ -44,12 +44,20 @@ int main() {
 
 		// ~~~ check validity ~~~ //
 		bool fetch_valid = reg->i >= 0;
-		bool decode_valid = reg->i >= 1;
-		bool execute_valid = reg->i >= 1;
+		bool decode_valid = reg->i >= 0;
+		bool execute_valid = reg->i >= 2;
 
 		// ~~~ execute ~~~ //
 		if (execute_valid) {
+			printf("\n&&&&&&&&&&& BEFORE EXECUTE &&&&&&&&&&&\n");
+			printf("PC for the execute: %d\n", reg->PC - 2);
+			pretty_print_pcb(execute_input);
+
 			execute(execute_input, reg, data_mem);
+
+			printf("\n&&&&&&&&&&& AFTER EXECUTE &&&&&&&&&&&\n");
+			pretty_print_diff_reg(old_reg, reg);
+			pretty_print_diff_data_mem(old_data_mem, data_mem);
 		}
 
 		// ~~~ decode ~~~ //
