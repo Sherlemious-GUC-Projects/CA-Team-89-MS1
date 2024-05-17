@@ -1,25 +1,6 @@
 #ifndef INSTRUCTION_MEMORY_H
 #define INSTRUCTION_MEMORY_H
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#define INSTRUCTION_WORD_SIZE 16
-#define INSTRUCTION_MEMORY_SIZE 1024
-
-typedef uint16_t *inst_mem_t;
-
-inst_mem_t init_inst_mem() {
-	inst_mem_t inst_mem = (uint16_t *)calloc(INSTRUCTION_MEMORY_SIZE, INSTRUCTION_WORD_SIZE);
-	return inst_mem;
-}
-
-void kill_inst_mem( inst_mem_t inst_mem) {
-	free(inst_mem);
-}
-
 void set_inst( inst_mem_t inst_mem, int address, uint16_t value) {
 	// check if the address is valid
 	if (!(address >= 0 && address < INSTRUCTION_MEMORY_SIZE)) {

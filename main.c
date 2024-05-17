@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <stdbool.h>
+#include <stdint.h>
+#include <math.h>
 
 // local header files
+#include "types.h"
 #include "MA/data_memory.h"
 #include "MA/instruction_memory.h"
 #include "MA/register.h"
@@ -13,7 +16,6 @@
 #include "ISA/fetch.h"
 #include "ISA/decode.h"
 #include "ISA/execute.h"
-
 
 int main() {
 	// init the path to the asm
@@ -32,8 +34,8 @@ int main() {
 
 	// init the PCBsss
 	uint16_t fetch_inst;
-	PCB_t decode_pcb;
-	PCB_t execute_pcb;
+	PCB_t *decode_pcb = init_pcb();
+	PCB_t *execute_pcb = init_pcb();
 
 	// init halting condition
 	bool halt = false;
@@ -70,7 +72,7 @@ int main() {
 
 		// ~~~ decode the instruction ~~~ //
 		if (decode_valid) {
-			decode_pcb = decode(fetch_inst, reg);
+			decode_pcb = decode(fetch_inst, reg, decode_pcb);
 			execute_pcb = decode_pcb;
 		}
 

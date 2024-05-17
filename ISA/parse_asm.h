@@ -1,11 +1,6 @@
 #ifndef PARSE_ASM_H
 #define PARSE_ASM_H
 
-// global header files
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 uint8_t parse_OPCode(char *token) {
 	if (strcmp(token, "ADD") == 0) {
 		return 0b0000;
@@ -36,7 +31,6 @@ uint8_t parse_OPCode(char *token) {
 		exit(1);
 	}
 }
-
 
 void read_asm(uint16_t *inst_mem, char *path) {
 	// open the file and check if its there
@@ -128,6 +122,5 @@ void read_asm(uint16_t *inst_mem, char *path) {
 	// close the file
 	fclose(fp);
 }
-
 
 #endif

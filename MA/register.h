@@ -1,29 +1,5 @@
 #ifndef _REGISTERS_C
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-#define NUM_GPRS 64
-
-typedef struct reg_t {
-	uint8_t GPRS[NUM_GPRS];
-	uint8_t SREG;
-	uint8_t PC;
-} reg_t;
-
-reg_t* init_reg() {
-	reg_t* reg = (reg_t*)calloc(1, sizeof(reg_t));
-	if (reg == NULL) {
-		printf("Error: Memory allocation failed\n");
-		exit(1);
-	}
-	return reg;
-}
-
-void kill_reg(reg_t* reg) {
-	free(reg);
-}
 
 uint8_t get_reg_flag(reg_t* reg, char flag) {
 	switch (flag) {

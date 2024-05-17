@@ -1,25 +1,6 @@
 #ifndef DATA_MEMORY_H
 #define DATA_MEMORY_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdbool.h>
-
-#define DATA_WORD_SIZE 8
-#define DATA_MEMORY_SIZE 2048
-
-typedef uint8_t* data_mem_t;
-
-data_mem_t init_data_mem() {
-	data_mem_t data_mem = (uint8_t *)calloc(DATA_MEMORY_SIZE, DATA_WORD_SIZE);
-	return data_mem;
-}
-
-void kill_data_mem( data_mem_t data_mem) {
-	free(data_mem);
-}
-
 void set_data( data_mem_t data_mem, int address, uint8_t value) {
 	// check if the address is valid
 	if (!(address >= 0 && address < DATA_MEMORY_SIZE)) {
